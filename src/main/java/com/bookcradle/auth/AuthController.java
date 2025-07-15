@@ -8,8 +8,12 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
+import javafx.scene.layout.HBox;
+import javafx.scene.shape.Rectangle;
+import javafx.scene.paint.Color;
 
 import java.io.*;
+import java.security.SecureRandom;
 
 public class AuthController {
 
@@ -26,15 +30,19 @@ public class AuthController {
     @FXML
     private Hyperlink messageLink;
     @FXML
-    private Label adminPromptLabel;
-    @FXML
     private Hyperlink adminPromptLink;
+    @FXML
+    private Label adminPromptLabel;
     @FXML
     private TextField nameField;
     @FXML
     private TextField surnameField;
     @FXML
     private TextField emailField;
+    @FXML
+    private Button generatePasswordButton; // New button for password generation
+    @FXML
+    private HBox passwordStrengthBar; // New HBox for strength indicator
 
     private enum Mode {
         ADMIN_SIGNIN, USER_LOGIN, USER_SIGNUP
@@ -45,6 +53,90 @@ public class AuthController {
     @FXML
     private void initialize() {
         updateUIForMode();
+        setupPasswordStrengthListener();
+        // Initialize password strength bar
+        Rectangle strengthIndicator = new Rectangle(100, 10);
+        strengthIndicator.setFill(Color.GRAY);
+        passwordStrengthBar.getChildren().add(strengthIndicator);
+    }
+
+    // Generate a strong password
+    private String generateStrongPassword(int length) {
+        String upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        String lower = "abcdefghijklmnopqrstuvwxyz";
+        String numbers = "0123456789";
+        String special = "!@#$%^&*()-_=+";
+        String allChars = upper + lower + numbers + special;
+        SecureRandom random = new SecureRandom();
+        StringBuilder password = new StringBuilder();
+
+        // Ensure at least one character from each category
+        password.append(upper.charAt(random.nextInt(upper.length())));
+        password.append(lower.charAt(random.nextInt(lower.length())));
+        password.append(numbers.charAt(random.nextInt(numbers.length())));
+        password.append(special.charAt(random.nextInt(special.length())));
+
+        // Fill the rest with random characters
+        for (int i = 4; i < length; i++) {
+            password.append(allChars.charAt(random.nextInt(allChars.length())));
+        }
+
+        // Shuffle the password
+        char[] passwordArray = password.toString().toCharArray();
+        for (int i = passwordArray.length - 1; i > 0; i--) {
+            int j = random.nextInt(i + 1);
+            char temp = passwordArray[i];
+            passwordArray[i] = passwordArray[j];
+            passwordArray[j] = temp;
+        }
+
+        return new String(passwordArray);
+    }
+
+    // Calculate password strength score (0-100)
+    private int calculatePasswordStrength(String password) {
+        int score = 0;
+        if (password == null || password.isEmpty()) return 0;
+
+        // Length check
+        if (password.length() >= 8) score += 25;
+        if (password.length() >= 12) score += 25;
+
+        // Character type checks
+        if (password.matches(".*[A-Z].*")) score += 15;
+        if (password.matches(".*[a-z].*")) score += 15;
+        if (password.matches(".*[0-9].*")) score += 15;
+        if (password.matches(".*[!@#$%^&*()-_=+].*")) score += 15;
+
+        // Penalize common patterns
+        if (password.matches(".*(.+)\\1.*")) score -= 10; // Repeated patterns
+        if (password.length() > 16) score = Math.min(100, score + 10); // Bonus for extra length
+
+        return Math.min(100, Math.max(0, score));
+    }
+
+
+    private void setupPasswordStrengthListener() {
+    passwordField.textProperty().addListener((observable, oldValue, newValue) -> {
+        if (newValue != null && !newValue.equals(oldValue)) {
+            System.out.println("Change observed from: " + observable); // Example usage
+            int strength = calculatePasswordStrength(newValue);
+            Rectangle strengthIndicator = (Rectangle) passwordStrengthBar.getChildren().get(0);
+            
+            if (strength <= 33) {
+                strengthIndicator.setFill(Color.RED);
+            } else if (strength <= 66) {
+                strengthIndicator.setFill(Color.YELLOW);
+            } else {
+                strengthIndicator.setFill(Color.GREEN);
+            }
+        }
+    });
+}
+    @FXML
+    private void onGeneratePasswordClicked() {
+        String newPassword = generateStrongPassword(12);
+        passwordField.setText(newPassword);
     }
 
     @FXML
@@ -57,6 +149,10 @@ public class AuthController {
         surnameField.setManaged(showExtraFields);
         emailField.setVisible(showExtraFields);
         emailField.setManaged(showExtraFields);
+        generatePasswordButton.setVisible(showExtraFields);
+        generatePasswordButton.setManaged(showExtraFields);
+        passwordStrengthBar.setVisible(showExtraFields);
+        passwordStrengthBar.setManaged(showExtraFields);
 
         switch (currentMode) {
             case ADMIN_SIGNIN:
@@ -136,7 +232,7 @@ public class AuthController {
 
             case USER_LOGIN:
                 if (isUserValid(user, hashedPass)) {
-                    loadUserDashboard(user); // pass logged-in email here
+                    loadUserDashboard(user);
                 }
                 break;
 
@@ -207,7 +303,6 @@ public class AuthController {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/user/UserDashboard.fxml"));
             Parent dashboardRoot = loader.load();
 
-            // Pass email to UserController
             UserController controller = loader.getController();
             controller.setLoggedInEmail(userEmail);
 
