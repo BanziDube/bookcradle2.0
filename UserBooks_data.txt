@@ -3,3 +3,5 @@ johndoe@gmail.com,Harry Potter and the Golden Snitch,2025-07-11,,0.0,false
 email=johndoe@gmail.com,books=Harry Potter and the Golden Snitch
 janedoe@gmail.com,Harry Potter and the Golden Snitch,2025-07-14,2025-07-14,0.0,false
 email=janedoe@gmail.com,books=
+banzidube8@gmail.com,Harry Potter and the Golden Snitch,2025-07-15,,0.0,false
+email=banzidube8@gmail.com,books=Harry Potter and the Golden Snitch

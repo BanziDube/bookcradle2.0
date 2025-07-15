@@ -2,3 +2,4 @@ name=Ntombi,surname=Qandashe,email=NtombiQandashe@capaciti.org.za,password=59944
 name=John,surname=Doe,email=johndoe@gmail.com,password=5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8
 name=Jane,surname=Doe,email=janedoe@gmail.com,password=5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8
 name=Themba,surname=Zwane,email=thembazwane@gmail.com,password=23952fa87a14487525fd9c07555b6b6a19a5e9426cec38ecae66ed0361cd469d
+name=Banzi,surname=Dube,email=banzidube8@gmail.com,password=0b7e883a6777e1854fd7be36ca34d0d2a2e831e042eecbe4afbe595c8f24fe99

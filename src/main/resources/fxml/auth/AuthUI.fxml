@@ -16,6 +16,8 @@
         
         <HBox spacing="5" alignment="CENTER_LEFT">
             <PasswordField fx:id="passwordField" promptText="Password" styleClass="input" HBox.hgrow="ALWAYS"/>
+            <TextField fx:id="visiblePasswordField" promptText="Password" styleClass="input" visible="false" managed="false"/>
+            <Button fx:id="togglePasswordButton" text="👁️" onAction="#onTogglePasswordVisibility" styleClass="btn-eye"/>
             <Button fx:id="generatePasswordButton" text="Generate" onAction="#onGeneratePasswordClicked" styleClass="btn-secondary"/>
         </HBox>
         
